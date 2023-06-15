@@ -9,7 +9,7 @@ pygame.display.set_caption('Chess')
 
 def main():
     run = True
-    # clock makes sure that the game runs at a constant FPS
+    # clock makes sure that txhe game runs at a constant FPS
     clock = pygame.time.Clock()
     board = Board()
     #game = Game(WIN)
@@ -23,8 +23,11 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pass
         board.drawSquares(WIN)
+        board.createBoard(WIN)
         #board.createBoard()
         pygame.display.update()
     pygame.quit()
-    
+
+
 main()
+
