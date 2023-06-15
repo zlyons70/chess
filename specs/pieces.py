@@ -1,11 +1,6 @@
 import pygame
 
 class Piece:
-    # def __init__(self, color, pieceType):
-    #     self.color = color
-    #     self.pieceType = pieceType
-    # This representation of the pieces allows us to look at each square in a binary notation
-    # 5 bits, three on the right represent piece type 2 on the left are the color of the piece
     Empty = 0
     King = 1
     Pawn = 2
@@ -16,34 +11,28 @@ class Piece:
     
     White = 8
     Black = 16
-    
-# class Pawn(Piece):
-#     def __init__(self, color, pieceType):
-#         if color == Piece.White:
-#             self.color = Piece.White
-#         else:
-#             self.color = Piece.Black
-#         super().__init__(self, color, pieceType)
-#         pawn = color + 2
-#         return pawn
-        
-    
-# class Knight(Piece):
-#     def __init__(self, color, pieceType):
-#         super().__init__(self, color, pieceType)
-    
-# class Bishop(Piece):
-#     def __init__(self, color, pieceType):
-#         super().__init__(self, color, pieceType)
-        
-# class Rook(Piece):
-#     def __init__(self, color, pieceType):
-#         super().__init__(self, color, pieceType)
-        
-# class Queen(Piece):
-#     def __init__(self, color, pieceType):
-#         super().__init__(self, color, pieceType)
 
-# class King(Piece):
-#     def __init__(self, color, pieceType):
-#         super().__init__(self, color, pieceType)
+    bQueen = pygame.image.load('specs/images/bQueen.png')
+    wQueen = pygame.image.load('specs/images/wQueen.png')
+    bKing = pygame.image.load('specs/images/bKing.png')
+    wKing = pygame.image.load('specs/images/wKing.png')
+    bPawn = pygame.image.load('specs/images/bPawn.png')
+    wPawn = pygame.image.load('specs/images/wPawn.png')
+    bBishop = pygame.image.load('specs/images/bBishop.png')
+    wBishop = pygame.image.load('specs/images/wBishop.png')
+    bKnight = pygame.image.load('specs/images/bKnight.png')
+    wKnight = pygame.image.load('specs/images/wKnight.png')
+    bRook = pygame.image.load('specs/images/bRook.png')
+    wRook = pygame.image.load('specs/images/wRook.png')
+    bQueen = pygame.transform.scale(bQueen, (100,100))
+    wQueen = pygame.transform.scale(wQueen, (100,100))
+    wKing = pygame.transform.scale(wKing, (100,100))
+    bKing = pygame.transform.scale(bKing, (100,100))
+    bPawn = pygame.transform.scale(bPawn, (100,100))
+    wPawn = pygame.transform.scale(wPawn, (100,100))
+    bBishop = pygame.transform.scale(bBishop, (100,100))
+    wBishop = pygame.transform.scale(wBishop, (100,100))
+    bKnight = pygame.transform.scale(bKnight, (100,100))
+    wKnight = pygame.transform.scale(wKnight, (100,100))
+    bRook = pygame.transform.scale(bRook, (100,100))
+    wRook = pygame.transform.scale(wRook, (100,100))

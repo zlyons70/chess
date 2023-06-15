@@ -24,7 +24,6 @@ def main():
                 pass
         board.drawSquares(WIN)
         board.createBoard(WIN)
-        #board.createBoard()
         pygame.display.update()
     pygame.quit()
 
