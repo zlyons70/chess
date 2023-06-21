@@ -12,6 +12,23 @@ class Piece:
     White = 8
     Black = 16
 
+    boardToFen = {
+        Empty : '.',
+        King | White : 'K',
+        King | Black : 'k',
+        Pawn | White : 'P',
+        Pawn | Black : 'p',
+        Knight | White : 'N',
+        Knight | Black : 'n',
+        Bishop | White : 'B',
+        Bishop | Black : 'b',
+        Rook | White : 'R',
+        Rook | Black : 'r',
+        Queen | White : 'Q',
+        Queen | Black : 'q'
+    }
+
+
     bQueen = pygame.image.load('specs/images/bQueen.png')
     wQueen = pygame.image.load('specs/images/wQueen.png')
     bKing = pygame.image.load('specs/images/bKing.png')

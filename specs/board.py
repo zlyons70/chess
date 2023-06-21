@@ -26,9 +26,9 @@ class Board:
                 pygame.draw.rect(win, LIGHT, (row * SQUARE_SIZE, col * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
     
     def createBoard(self, win):
-        print(self.board)
+        #print(self.board)
         self.fenConvert(self.currentFen, win)
-        print(self.board)
+        #print(self.board)
         # TODO
         # We'll need a function that converts from board to fen
         # we can then set currentFen to the output of this function
@@ -107,20 +107,48 @@ class Board:
                     win.blit(Piece.wPawn, (x,y))
                 x += 100
     
-    # def boardToFen(self, board):
-    #     fen = ""
-    #     for i in range(len(self.board)):
-    #         
+    def boardToFen(self, board):
+        fen = ""
+        emptyCounter = 0
+        counter = 0
+        fenMap = Piece.boardToFen
+        for i in range(len(self.board)):
+            if counter == 8:
+                counter = 0
+                if emptyCounter > 0:
+                    fen += str(emptyCounter)
+                emptyCounter = 0
+                fen += '/'
+            if self.board[i] == 0:
+                emptyCounter += 1
+                if emptyCounter == 8:
+                    fen += str(emptyCounter)
+                    fen += '/'
+                    emptyCounter = 0
+                    counter = 0
+            if self.board[i] != 0:
+                if emptyCounter > 0:
+                    fen += str(emptyCounter)
+                    emptyCounter = 0
+                fen += fenMap[self.board[i]]
+                counter += 1            
+        self.currentFen = fen
+        print(fen)
+        return fen
+        
+
     
     def move(self, board):
         self.selectedPosition = self.getPosition(self.board)
         temp = self.board[self.selectedPosition]
         self.board[self.selectedPosition] = 0
-        self.board[20] = temp
-        print(self.board)
-        return self.board
+        self.board[36] = temp
+        self.boardToFen(self.board)
+        #print(self.board)
+        # TODO Decide whether to keep rely on  boardToFen
+        #return self.board
     
     def getPosition(self, board):
-        return 8
+        return 52
         
         
