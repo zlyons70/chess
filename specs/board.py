@@ -7,7 +7,7 @@ class Board:
     # here we are def a few attributes of the board class
     def __init__(self):
         self.board = [0] * 64
-        self.selectedPositon = None
+        self.selectedPositon = 0
         self.whitePawns = self.blackPawns = 8
         self.whiteKnights = self.blackKnights = 2
         self.whiteBishops = self.blackBishops = 2
@@ -110,45 +110,34 @@ class Board:
     def boardToFen(self, board):
         fen = ""
         emptyCounter = 0
-        counter = 0
         fenMap = Piece.boardToFen
         for i in range(len(self.board)):
-            if counter == 8:
-                counter = 0
+            if i % 8 == 0 and i != 0:
                 if emptyCounter > 0:
                     fen += str(emptyCounter)
-                emptyCounter = 0
+                    emptyCounter = 0
                 fen += '/'
             if self.board[i] == 0:
                 emptyCounter += 1
-                if emptyCounter == 8:
-                    fen += str(emptyCounter)
-                    fen += '/'
-                    emptyCounter = 0
-                    counter = 0
             if self.board[i] != 0:
                 if emptyCounter > 0:
                     fen += str(emptyCounter)
                     emptyCounter = 0
                 fen += fenMap[self.board[i]]
-                counter += 1            
         self.currentFen = fen
         print(fen)
         return fen
-        
-
-    
-    def move(self, board):
-        self.selectedPosition = self.getPosition(self.board)
+ 
+    def move(self, pos, destination):
+        self.selectedPosition = pos
         temp = self.board[self.selectedPosition]
         self.board[self.selectedPosition] = 0
-        self.board[36] = temp
+        self.board[destination] = temp
         self.boardToFen(self.board)
-        #print(self.board)
         # TODO Decide whether to keep rely on  boardToFen
         #return self.board
     
-    def getPosition(self, board):
-        return 52
+    def getPiece(self, pos):
+        return self.board[pos]
         
         

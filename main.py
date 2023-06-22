@@ -29,8 +29,8 @@ def main():
             # TODO finish up this function when we're moving pieces
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
-                arrayPosition = getPositionFromMouse(pos)
-                #board.movePiece(arrayPosition)
+                selectedPiece = getPositionFromMouse(pos)
+                game.select(selectedPiece)
         game.update()
     pygame.quit()
 
