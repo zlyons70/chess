@@ -42,14 +42,18 @@ class Game:
     def select(self, pos):
         destination = None
         if self.selectedPiece is None or self.selectedPiece == 0:
+            print("in Select first conditional")
             print(self.board.board[pos])
             if self.board.board[pos] != 0:
                 self.selectedPiece = pos
-                    #self.select(self.selectedPiece)
+                #self.select(self.selectedPiece)
+        else:
+            destination = pos
+            if self.selectedPiece != None and destination != None and self.moveValid(destination):
+                self._move(destination)
             else:
-                destination = pos
-                if self.selectedPiece != None and destination != None and self.moveValid(destination):
-                    self._move(destination)
+                self.selectedPiece = None
+                self.select(pos)
         
     
     def _move(self, destination):
@@ -57,13 +61,15 @@ class Game:
         self.board.move(piece, destination)
         self.selectedPiece = None
         self.turn = Piece.Black if self.turn == Piece.White else Piece.White
-        self.update()
+        #self.update()
     
-    def moveValid(self, pos):
-        piece = self.board.board[pos]
+    def moveValid(self, destination):
+        piece = self.board.board[self.selectedPiece]
+        print("In Move Valid pre if", self.turn, "piece", piece)
         if piece < 16 and self.turn == Piece.Black:
             return False
         if piece > 16 and self.turn == Piece.White:
             return False
+        print("we Here it's", self.turn)
         return True
             
