@@ -1,6 +1,7 @@
 import pygame
 from .board import Board
 from .pieces import Piece
+from .logic import Logic
 # This file is responsible for the game logic
 # This is good because we don't clutter main
 # TODO
@@ -31,7 +32,7 @@ class Game:
         self.board = Board()
         self.turn = Piece.White
         self.validMoves = {}
-    
+        self.logic = Logic()
     def reset(self):
         self._init()
     # TODO
@@ -41,12 +42,12 @@ class Game:
     # after this function gets working, I can then start working on the logic for the pieces
     def select(self, pos):
         destination = None
-        if self.selectedPiece is None or self.selectedPiece == 0:
+        if self.selectedPiece is None or self.board.board[self.selectedPiece] == 0:
             print("in Select first conditional")
             print(self.board.board[pos])
             if self.board.board[pos] != 0:
                 self.selectedPiece = pos
-                #self.select(self.selectedPiece)
+                
         else:
             destination = pos
             if self.selectedPiece != None and destination != None and self.moveValid(destination):
@@ -70,6 +71,12 @@ class Game:
             return False
         if piece > 16 and self.turn == Piece.White:
             return False
-        print("we Here it's", self.turn)
-        return True
+        print("Selected piece ", self.selectedPiece)
+        self.validMoves[self.selectedPiece] = self.logic.pieceType(self.board.board, piece, self.selectedPiece)
+        print(self.validMoves[self.selectedPiece])
+        if destination in self.validMoves[self.selectedPiece]:
+            self.validMoves = {}
+            return True
+        print("Invalid Move")
+        return False
             

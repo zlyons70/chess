@@ -1,6 +1,7 @@
 import pygame
 from .constants import ROWS, COLS, DARK, LIGHT, SQUARE_SIZE
 from .pieces import Piece
+#from .logic import Logic
 
 # Create the board object
 class Board:
