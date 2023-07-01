@@ -16,6 +16,7 @@ class Board:
         self.whiteQueens = self.blackQueens = 1
         self.whiteKing = self.blackKing = 1
         self.currentFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+        self.bKCastle = self.bQCastle = self.wKCastle = self.wQCastle = True
         self.halfMoves = 0
         self.fullMoves = 1
         #self.createBoard()
@@ -36,6 +37,11 @@ class Board:
     
     # This function is used to convert from fen connotation to the board
     def fenConvert(self, fen, win):
+        self.whitePawns = self.blackPawns = 0
+        self.whiteKnights = self.blackKnights = 0
+        self.whiteBishops = self.blackBishops = 0
+        self.whiteRooks = self.blackRooks = 0
+        self.whiteQueens = self.blackQueens = 0
         x = 0
         y = 0
         spaceCounter = 0
@@ -71,39 +77,51 @@ class Board:
             else:
                 boardPosition = int((y/100 * 8) + x/100)
                 if fen[i] == 'r':
+                    self.blackRooks += 1
                     self.board[boardPosition] = Piece.Black | Piece.Rook
                     win.blit(Piece.bRook, (x,y))
                 elif fen[i] == 'n':
+                    self.blackKnights += 1
                     self.board[boardPosition] = Piece.Black | Piece.Knight
                     win.blit(Piece.bKnight, (x,y))
                 elif fen[i] == 'b':
+                    self.blackBishops += 1
                     self.board[boardPosition] = Piece.Black | Piece.Bishop
                     win.blit(Piece.bBishop, (x,y))
                 elif fen[i] == 'q':
+                    self.blackQueens += 1
                     self.board[boardPosition] = Piece.Black | Piece.Queen
                     win.blit(Piece.bQueen, (x,y))
                 elif fen[i] == 'k':
+                    self.blackKing += 1
                     self.board[boardPosition] = Piece.Black | Piece.King
                     win.blit(Piece.bKing, (x,y))
                 elif fen[i] == 'p':
+                    self.blackPawns += 1
                     self.board[boardPosition] = Piece.Black | Piece.Pawn
                     win.blit(Piece.bPawn, (x,y))
                 elif fen[i] == 'R':
+                    self.whiteRooks += 1
                     self.board[boardPosition] = Piece.White | Piece.Rook
                     win.blit(Piece.wRook, (x,y))
                 elif fen[i] == 'N':
+                    self.whiteKnights += 1
                     self.board[boardPosition] = Piece.White | Piece.Knight
                     win.blit(Piece.wKnight, (x,y))
                 elif fen[i] == 'B':
+                    self.whiteBishops += 1
                     self.board[boardPosition] = Piece.White | Piece.Bishop
                     win.blit(Piece.wBishop, (x,y))
                 elif fen[i] == 'Q':
+                    self.whiteQueens += 1
                     self.board[boardPosition] = Piece.White | Piece.Queen
                     win.blit(Piece.wQueen, (x,y))
                 elif fen[i] == 'K':
+                    self.whiteKing += 1
                     self.board[boardPosition]= Piece.White | Piece.King
                     win.blit(Piece.wKing, (x,y))
                 elif fen[i] == 'P':
+                    self.blackPawns += 1
                     self.board[boardPosition] = Piece.White | Piece.Pawn
                     win.blit(Piece.wPawn, (x,y))
                 x += 100
@@ -135,10 +153,11 @@ class Board:
         self.board[self.selectedPosition] = 0
         self.board[destination] = temp
         self.boardToFen(self.board)
-        # TODO Decide whether to keep rely on  boardToFen
-        #return self.board
     
     def getPiece(self, pos):
         return self.board[pos]
         
-        
+    def drawValidMoves(self, win, validMoves):
+        for i in range(len(validMoves)):
+            pygame.draw.circle(win, (15,10,75), (validMoves[i] % 8 * 100 + 50, int(validMoves[i] / 8) * 100 + 50), 20)
+        return

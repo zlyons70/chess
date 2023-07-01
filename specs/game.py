@@ -24,7 +24,10 @@ class Game:
     def update(self):
         self.board.drawSquares(self.win)
         self.board.createBoard(self.win)
+        if self.highlightMoves == True:
+            self.board.drawValidMoves(self.win, self.validMoves[self.selectedPiece])
         pygame.display.update()
+            
         #self.selectedPiece = None
     
     def _init(self):
@@ -33,6 +36,8 @@ class Game:
         self.turn = Piece.White
         self.validMoves = {}
         self.logic = Logic()
+        self.highlightMoves = False
+    
     def reset(self):
         self._init()
     # TODO
@@ -42,12 +47,21 @@ class Game:
     # after this function gets working, I can then start working on the logic for the pieces
     def select(self, pos):
         destination = None
+        self.highlightMoves = False
         if self.selectedPiece is None or self.board.board[self.selectedPiece] == 0:
             print("in Select first conditional")
             print(self.board.board[pos])
             if self.board.board[pos] != 0:
                 self.selectedPiece = pos
-                
+                piece = self.board.board[self.selectedPiece]
+                self.validMoves[self.selectedPiece] = self.logic.pieceType(self.board.board, piece, self.selectedPiece)
+                print(self.validMoves[self.selectedPiece])
+                if piece < 16 and self.turn == Piece.Black:
+                    self.highlightMoves = False
+                elif piece > 16 and self.turn == Piece.White:
+                    self.highlightMoves = False
+                else:
+                    self.highlightMoves = True
         else:
             destination = pos
             if self.selectedPiece != None and destination != None and self.moveValid(destination):
@@ -59,6 +73,13 @@ class Game:
     
     def _move(self, destination):
         piece = self.selectedPiece
+        if piece == self.turn & Piece.King:
+            if self.turn == Piece.White:
+                self.board.wKCastle = False
+                self.board.wQCastle = False
+            else:
+                self.board.bKCastle = False
+                self.board.bQCastle = False
         self.board.move(piece, destination)
         self.selectedPiece = None
         self.turn = Piece.Black if self.turn == Piece.White else Piece.White
@@ -72,8 +93,6 @@ class Game:
         if piece > 16 and self.turn == Piece.White:
             return False
         print("Selected piece ", self.selectedPiece)
-        self.validMoves[self.selectedPiece] = self.logic.pieceType(self.board.board, piece, self.selectedPiece)
-        print(self.validMoves[self.selectedPiece])
         if destination in self.validMoves[self.selectedPiece]:
             self.validMoves = {}
             return True

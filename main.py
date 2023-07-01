@@ -17,7 +17,7 @@ def getPositionFromMouse(pos):
 
 def main():
     run = True
-    # clock makes sure that txhe game runs at a constant FPS
+    # clock makes sure that the game runs at a constant FPS
     clock = pygame.time.Clock()
     game = Game(WIN)
     while run:
@@ -25,8 +25,6 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-            # The below is going to check what we've clicked on
-            # TODO finish up this function when we're moving pieces
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 selectedPiece = getPositionFromMouse(pos)
