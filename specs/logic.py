@@ -4,7 +4,7 @@ from .pieces import Piece
 
 class Logic:
     
-    def pieceType(self, board, piece, position):
+    def pieceType(self, board, piece, position, boardObject):
         color = piece & Piece.Black
         if color != Piece.Black:
             color = Piece.White
@@ -20,7 +20,7 @@ class Logic:
         if piece == Piece.Queen | Piece.White or piece == Piece.Queen | Piece.Black:
             return self.queenLogic(board, position, color)
         if piece == Piece.King | Piece.White or piece == Piece.King | Piece.Black:
-            return self.kingLogic(board, position, color)
+            return self.kingLogic(board, position, color, boardObject)
     # TODO 
     # I also need to create a function that will check if the king is in check
     
@@ -180,7 +180,7 @@ class Logic:
         validMoves.extend(self.rookLogic(board, position, color))
         return validMoves
     
-    def kingLogic(self, board, position, color):
+    def kingLogic(self, board, position, color, boardObj):
         validMoves = []
         offset = [-1, 1, -8, 8, -7, 7, -9, 9]
         for move in offset:
@@ -193,23 +193,29 @@ class Logic:
         # castling
         if color == Piece.White:
             if board[60] == Piece.White| Piece.King:
-                if board[61] == 0 and board[62] == 0 and board[63] == Piece.White| Piece.Rook and board.wKcastle == True:
+                if board[61] == 0 and board[62] == 0 and board[63] == Piece.White| Piece.Rook and boardObj.wKCastle == True:
                     validMoves.append(62)
-            if board[60] == Piece.White| Piece.King and board.wQcastle == True:
+            if board[60] == Piece.White| Piece.King and boardObj.wQCastle == True:
                 if board[59] == 0 and board[58] == 0 and board[57] == 0 and board[56] == Piece.White| Piece.Rook:
                     validMoves.append(58)
         if color == Piece.Black:
             if board[4] == Piece.Black| Piece.King:
-                if board[5] == 0 and board[6] == 0 and board[7] == Piece.Black| Piece.Rook and board.bKcastle == True:
+                if board[5] == 0 and board[6] == 0 and board[7] == Piece.Black| Piece.Rook and boardObj.bKCastle == True:
                     validMoves.append(6)
-            if board[4] == Piece.Black| Piece.King and board.bQcastle == True:
+            if board[4] == Piece.Black| Piece.King and boardObj.bQCastle == True:
                 if board[3] == 0 and board[2] == 0 and board[1] == 0 and board[0] == Piece.Black| Piece.Rook:
                     validMoves.append(2)
         
         return validMoves
     
-    #def validCastle(self, board, position, color):
-        
+    def validCastle(self, board, position, color, boardObj):
+        # TODO Need to check to see if any of the squares required for castling are under attack
+        # TODO Need to check to see if the king is in check
+        # initial idea :
+        # I can start at the spots on the board that the king has to pass through to castle and see if these
+        # spots can see pieces that would threaten them, using the same logic as what the queen uses to find valid moves
+        # if in any of these spots the square can see an enemy piece that spot is not a valid move
+        # then using this same logic I can see if the key king spots are under attack
         
     def checkLogic(self, board, piece, destination):
         return True

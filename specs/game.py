@@ -40,11 +40,7 @@ class Game:
     
     def reset(self):
         self._init()
-    # TODO
-    # notes for later, I think that I need to have a function that see's whether or not I'm selecting a piece
-    # or if i'm selecting a square to move to
-    # once I have this figured out I can then move the seleced piece to the selected square
-    # after this function gets working, I can then start working on the logic for the pieces
+
     def select(self, pos):
         destination = None
         self.highlightMoves = False
@@ -54,14 +50,16 @@ class Game:
             if self.board.board[pos] != 0:
                 self.selectedPiece = pos
                 piece = self.board.board[self.selectedPiece]
-                self.validMoves[self.selectedPiece] = self.logic.pieceType(self.board.board, piece, self.selectedPiece)
+                self.validMoves[self.selectedPiece] = self.logic.pieceType(self.board.board, piece, self.selectedPiece, self.board)
                 print(self.validMoves[self.selectedPiece])
+
                 if piece < 16 and self.turn == Piece.Black:
                     self.highlightMoves = False
                 elif piece > 16 and self.turn == Piece.White:
                     self.highlightMoves = False
                 else:
                     self.highlightMoves = True
+
         else:
             destination = pos
             if self.selectedPiece != None and destination != None and self.moveValid(destination):
@@ -72,15 +70,39 @@ class Game:
         
     
     def _move(self, destination):
-        piece = self.selectedPiece
-        if piece == self.turn & Piece.King:
+        pos = self.selectedPiece
+        piece = self.board.board[pos]
+        # if castleing is move rook
+        # if the piece we're moving is the king, we need to disable castling
+        if piece == Piece.King | self.turn:
             if self.turn == Piece.White:
+                print("White king moved")
                 self.board.wKCastle = False
                 self.board.wQCastle = False
+                if pos == 60:
+                    if destination == 62:
+                        self.board.move(63, 61)
+                    elif destination == 58:
+                        self.board.move(56, 59)
             else:
                 self.board.bKCastle = False
                 self.board.bQCastle = False
-        self.board.move(piece, destination)
+                if pos == 4:
+                    if destination == 6:
+                        self.board.move(7, 5)
+                    elif destination == 2:
+                        self.board.move(0, 3)
+        # if the piece we're moving is a rook, we need to disable castling
+        if piece == Piece.Rook | self.turn:
+            if pos == 0:
+                self.board.wQCastle = False
+            elif pos == 7:
+                self.board.wKCastle = False
+            elif pos == 56:
+                self.board.bQCastle = False
+            elif pos == 63:
+                self.board.bKCastle = False
+        self.board.move(pos, destination)
         self.selectedPiece = None
         self.turn = Piece.Black if self.turn == Piece.White else Piece.White
         #self.update()
