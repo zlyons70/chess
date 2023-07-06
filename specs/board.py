@@ -19,6 +19,9 @@ class Board:
         self.bKCastle = self.bQCastle = self.wKCastle = self.wQCastle = True
         self.halfMoves = 0
         self.fullMoves = 1
+        self.blackKingPosition = 4
+        self.whiteKingPosition = 60
+        self.whiteCheck = self.blackCheck = False
         #self.createBoard()
     
     def drawSquares(self, win):
