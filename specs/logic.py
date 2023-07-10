@@ -4,25 +4,44 @@ from .pieces import Piece
 
 class Logic:
     
-    def pieceType(self, board, piece, position, boardObject):
+    def pieceType(self, board, piece, position, boardObject, kingPosition):
         color = piece & Piece.Black
         checkStatus = boardObject.blackCheck
         validMoves = []
+        invalidMoves = []
+        potentialKingMoves = None
         if color != Piece.Black:
             color = Piece.White
             checkStatus = boardObject.whiteCheck
         if piece == Piece.Pawn | Piece.White or piece == Piece.Pawn | Piece.Black:
-            return self.pawnLogic(board, position, color)
+            validMoves = self.pawnLogic(board, position, color)
         if piece == Piece.Rook | Piece.White or piece == Piece.Rook | Piece.Black:
-            return self.rookLogic(board, position, color)
+            validMoves = self.rookLogic(board, position, color)
         if piece == Piece.Knight | Piece.White or piece == Piece.Knight | Piece.Black:
-            return self.knightLogic(board, position, color)
+            validMoves = self.knightLogic(board, position, color)
         if piece == Piece.Bishop | Piece.White or piece == Piece.Bishop | Piece.Black:
-            return self.bishopLogic(board, position, color)
+            validMoves =  self.bishopLogic(board, position, color)
         if piece == Piece.Queen | Piece.White or piece == Piece.Queen | Piece.Black:
-            return self.queenLogic(board, position, color)
+            validMoves =  self.queenLogic(board, position, color)
         if piece == Piece.King | Piece.White or piece == Piece.King | Piece.Black:
-            return self.kingLogic(board, position, color, boardObject)
+            validMoves = self.kingLogic(board, position, color, boardObject)
+            potentialKingMoves = validMoves.copy()
+            # if in check moves are only valid if they get the piece out of check
+        for moves in validMoves:
+            if potentialKingMoves != None:
+                kingPosition = moves
+            tempBoard = board.copy()
+            tempBoard[position] = 0
+            tempBoard[moves] = piece
+            print("Move being tested", moves)
+            if not self.checkLogic(tempBoard, kingPosition, color):
+                print("Removing move", moves)
+                print("tempBoard", tempBoard)
+                print("Check is currently true")
+                invalidMoves.append(moves)
+        for moves in invalidMoves:
+            validMoves.remove(moves)
+        return validMoves
     # TODO 
     # I also need to create a function that will check if the king is in check
     
@@ -282,7 +301,7 @@ class Logic:
             if board[move] == Piece.White| Piece.Rook and color == Piece.Black or board[move] == Piece.White| Piece.Queen and color == Piece.Black:
                 print("Rook attack 2")
                 return False
-        print("checkLogic failed")
+        print("Not in check")
         return True
     
     def notInCheck(self, validMoves, board, checkStatus, position):

@@ -5,11 +5,8 @@ from .logic import Logic
 # This file is responsible for the game logic
 # This is good because we don't clutter main
 # TODO
-# Who's turn is it?
-# Legal moves
 # Checkmate
 # en passant
-# castling
 # pawn promotion
 # turn counter
 # 50 move rule
@@ -29,7 +26,17 @@ class Game:
         pygame.display.update()
             
         #self.selectedPiece = None
-    
+    # This function will be used to determine the state of the game after
+    # each move, we need to check for checkmate, stalemate, etc.
+    # TODO
+    # Make helper functions for each of these
+    # Checkmate, check all valid moves, if none and in check, it's mate
+    # Stalemate, check all valid moves, if none and not in check, it's stalemate, and if not enough material
+    # 3 fold repetition, check if the current board state has been seen 3 times, Idea, store FEN strings in a dicitonary, if it has appeared add to its counter
+    # 50 move rule.
+    def gameState(self):
+        if self.turn == Piece.White:
+            
     def _init(self):
         self.selectedPiece = None
         self.board = Board()
@@ -44,17 +51,15 @@ class Game:
     def select(self, pos):
         destination = None
         self.highlightMoves = False
-        currentKing = self.board.whiteKingPosition if self.turn == Piece.White else self.board.blackKingPosition
+        currentKingPos = self.board.whiteKingPosition if self.turn == Piece.White else self.board.blackKingPosition
         if self.selectedPiece is None or self.board.board[self.selectedPiece] == 0:
             print("in Select first conditional")
             print(self.board.board[pos])
             if self.board.board[pos] != 0:
                 self.selectedPiece = pos
                 piece = self.board.board[self.selectedPiece]
-                if self.board.blackCheck == True or self.board.whiteCheck == True:
-                    self.generateAllValidMoves()
-                else:
-                    self.validMoves[self.selectedPiece] = self.logic.pieceType(self.board.board, piece, self.selectedPiece, self.board)
+                if self.validMoves.get(self.selectedPiece) == None:
+                    self.validMoves[self.selectedPiece] = self.logic.pieceType(self.board.board, piece, self.selectedPiece, self.board, currentKingPos)
                 print(self.validMoves[self.selectedPiece])
                 if piece < 16 and self.turn == Piece.Black:
                     self.highlightMoves = False
@@ -109,11 +114,11 @@ class Game:
                 self.board.bKCastle = False
         self.board.move(pos, destination)
         self.selectedPiece = None
-        self.turn = Piece.Black if self.turn == Piece.White else Piece.White
-        if self.turn == Piece.White:
-            self.board.whiteCheck = not self.logic.checkLogic(self.board.board, self.board.whiteKingPosition, self.turn)
-        else:
-            self.board.blackCheck = not self.logic.checkLogic(self.board.board, self.board.blackKingPosition, self.turn)
+        self.gameState()
+        # if self.turn == Piece.White:
+        #     self.board.whiteCheck = not self.logic.checkLogic(self.board.board, self.board.whiteKingPosition, self.turn)
+        # else:
+        #     self.board.blackCheck = not self.logic.checkLogic(self.board.board, self.board.blackKingPosition, self.turn)
         #self.update()
     
     def moveValid(self, destination):
@@ -131,25 +136,14 @@ class Game:
         return False
     
     def generateAllValidMoves(self):
+        if self.turn == Piece.White:
+            currentKingPos = self.board.whiteKingPosition
+        else:
+            currentKingPos = self.board.blackKingPosition
         for i in range(64):
             if self.board.board[i] != 0 and self.board.board[i] & self.turn == self.turn:
                 piece = self.board.board[i]
-                testMoves = self.logic.pieceType(self.board.board, piece, i, self.board)
-                for j in testMoves:
-                    if piece == Piece.King | self.turn:
-                            kingPosition = j
-                    else:
-                        kingPosition = self.board.whiteKingPosition if self.turn == Piece.White else self.board.blackKingPosition
-                    temp = self.board.board.copy()
-                    print("temp", temp)
-                    print("board", self.board.board)
-                    temp[i] = 0
-                    temp[j] = piece
-                    if temp == self.board.board:
-                        print("temp == board")
-                    if not self.logic.checkLogic(temp, kingPosition, self.turn):
-                        testMoves.remove(j)
-                self.validMoves[i] = testMoves
+                self.validMoves[piece] = self.logic.pieceType(self.board.board, piece, self.selectedPiece, self.board, currentKingPos)
         print("Completed generating all valid moves")
         print(self.validMoves)
         return
