@@ -5,13 +5,11 @@ from .logic import Logic
 # This file is responsible for the game logic
 # This is good because we don't clutter main
 # TODO
-# Checkmate
 # en passant
 # pawn promotion
 # turn counter
 # 50 move rule
-# 3 fold repetition
-
+# Fix white square bishop bug
 class Game:
     def __init__(self, win):
         self._init()
@@ -30,12 +28,25 @@ class Game:
     # each move, we need to check for checkmate, stalemate, etc.
     # TODO
     # Make helper functions for each of these
-    # Checkmate, check all valid moves, if none and in check, it's mate
-    # Stalemate, check all valid moves, if none and not in check, it's stalemate, and if not enough material
-    # 3 fold repetition, check if the current board state has been seen 3 times, Idea, store FEN strings in a dicitonary, if it has appeared add to its counter
     # 50 move rule.
-    def gameState(self):
+    def beginNewTurn(self):
         if self.turn == Piece.White:
+            self.turn = Piece.Black
+            self.board.blackCheck = not self.logic.checkLogic(self.board.board, self.board.blackKingPosition, Piece.Black)
+            self.board.halfMoves = 1
+        else:
+            self.turn = Piece.White
+            self.board.whiteCheck = not self.logic.checkLogic(self.board.board, self.board.whiteKingPosition, Piece.White)
+            self.board.fullMoves += 1
+            self.board.halfMoves = 0
+        if self.board.whiteCheck == True or self.board.blackCheck == True:
+            self.checkmate()
+        self.stalemate()
+        if self.board.halfMoves == 50:
+            print("Draw by 50 move rule")
+        if self.board.threeFold == True:
+            print("Draw by 3 fold repetition")
+        return        
             
     def _init(self):
         self.selectedPiece = None
@@ -112,9 +123,13 @@ class Game:
                 self.board.bQCastle = False
             elif pos == 63:
                 self.board.bKCastle = False
+        if self.turn == Piece.White:
+            self.board.turn = 'b'
+        else: 
+            self.board.turn = 'w'
         self.board.move(pos, destination)
         self.selectedPiece = None
-        self.gameState()
+        self.beginNewTurn()
         # if self.turn == Piece.White:
         #     self.board.whiteCheck = not self.logic.checkLogic(self.board.board, self.board.whiteKingPosition, self.turn)
         # else:
@@ -143,7 +158,30 @@ class Game:
         for i in range(64):
             if self.board.board[i] != 0 and self.board.board[i] & self.turn == self.turn:
                 piece = self.board.board[i]
-                self.validMoves[piece] = self.logic.pieceType(self.board.board, piece, self.selectedPiece, self.board, currentKingPos)
-        print("Completed generating all valid moves")
-        print(self.validMoves)
+                self.validMoves[piece] = self.logic.pieceType(self.board.board, piece, i, self.board, currentKingPos)
+        total = 0
+        for moves in self.validMoves:
+            if self.validMoves[moves] == []:
+                continue
+            else:
+                total += len(self.validMoves[moves])
+        return total
+    
+    def checkmate(self):
+        if self.board.whiteCheck == True:
+            total = self.generateAllValidMoves()
+            if total == 0:
+                print("Checkmate")
+        if self.board.blackCheck == True:
+            print("Black is in check")
+            total = self.generateAllValidMoves()
+            if total == 0:
+                print("Checkmate")
+        return
+    
+    def stalemate(self):
+        if self.board.whiteCheck == False and self.board.blackCheck == False:
+            total = self.generateAllValidMoves()
+            if total == 0:
+                print("Stalemate")
         return

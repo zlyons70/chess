@@ -22,6 +22,10 @@ class Board:
         self.blackKingPosition = 4
         self.whiteKingPosition = 60
         self.whiteCheck = self.blackCheck = False
+        self.enPassant = -1
+        self.turn = 'w'
+        self.threeFold = False
+        self.fenApperances = {}
         #self.createBoard()
     
     def drawSquares(self, win):
@@ -38,7 +42,7 @@ class Board:
         # We'll need a function that converts from board to fen
         # we can then set currentFen to the output of this function
     
-    # This function is used to convert from fen connotation to the board
+    # This function is used to convert from fen connotation to the board the players see
     def fenConvert(self, fen, win):
         self.whitePawns = self.blackPawns = 0
         self.whiteKnights = self.blackKnights = 0
@@ -146,6 +150,33 @@ class Board:
                     fen += str(emptyCounter)
                     emptyCounter = 0
                 fen += fenMap[self.board[i]]
+        fen += ' '
+        fen += self.turn
+        fen += ' '
+        if self.wKCastle:
+            fen += 'K'
+        if self.wQCastle:
+            fen += 'Q'
+        if not self.wKCastle and not self.wQCastle:
+            fen += '-'
+        if self.bKCastle:
+            fen += 'k'
+        if self.bQCastle:
+            fen += 'q'
+        if not self.bKCastle and not self.bQCastle:
+            fen += '-'
+        fen += ' '
+        if self.enPassant == -1:
+            fen += '-'
+        else:
+            fen += str(self.enPassant)
+        self.fenApperances[fen] = self.fenApperances.get(fen, 0) + 1
+        if self.fenApperances[fen] >= 3:
+            self.threeFold = True
+        fen += ' '
+        fen += str(self.halfMoves)
+        fen += ' '
+        fen += str(self.fullMoves)
         self.currentFen = fen
         print(fen)
         return fen
