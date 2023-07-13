@@ -1,4 +1,5 @@
 import pygame
+from pygame.locals import *
 from .board import Board
 from .pieces import Piece
 from .logic import Logic
@@ -42,13 +43,12 @@ class Game:
             self.board.halfMoves = 0
         if self.board.whiteCheck == True or self.board.blackCheck == True:
             self.checkmate()
-            print("Checkmate")
         self.stalemate()
         if self.board.halfMoves == 50:
             print("Draw by 50 move rule")
         if self.board.threeFold == True:
             print("Draw by 3 fold repetition")
-        return        
+        return
             
     def _init(self):
         self.selectedPiece = None
@@ -94,16 +94,20 @@ class Game:
     def _move(self, destination):
         pos = self.selectedPiece
         piece = self.board.board[pos]
-
+        if self.board.enPassant != -1:
+            if self.board.board[self.board.enPassant] == Piece.Pawn | self.turn:
+                self.board.enPassant = -1
         if piece == Piece.Pawn | self.turn:
-            print("In pawn conditional")
-            print(pos)
-            print(destination)
+            direction = -1 if self.turn == Piece.White else 1
             if abs(pos - destination) == 16:
                 print("In en passant conditional")
                 print("Destination", destination)
                 self.board.enPassant = destination
-
+            if self.board.enPassant != -1:
+                if destination == self.board.enPassant + (8 * direction):
+                    self.board.board[self.board.enPassant] = 0
+            if destination <= 7 or destination >= 56:
+                self.pawnPromotion()
         if piece == Piece.King | self.turn:
             if self.turn == Piece.White:
                 print("White king moved")
@@ -195,4 +199,7 @@ class Game:
             total = self.generateAllValidMoves()
             if total == 0:
                 print("Stalemate")
+        return
+    
+    def pawnPromotion(self):
         return

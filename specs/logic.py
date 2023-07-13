@@ -211,19 +211,20 @@ class Logic:
                     validMoves.append(position + move)
                     
         # castling
-        if color == Piece.White:
-            if board[60] == Piece.White| Piece.King:
-                if board[61] == 0 and board[62] == 0 and board[63] == Piece.White| Piece.Rook and boardObj.wKCastle == True and self.validCastle(board, "wKCastle") == True:
-                    validMoves.append(62)
-                if board[59] == 0 and board[58] == 0 and board[57] == 0 and board[56] == Piece.White| Piece.Rook  and boardObj.wQCastle == True and self.validCastle(board, "wQCastle") == True:
-                    validMoves.append(58)
-        if color == Piece.Black:
-            if board[4] == Piece.Black| Piece.King:
-                if board[5] == 0 and board[6] == 0 and board[7] == Piece.Black| Piece.Rook and boardObj.bKCastle == True and self.validCastle(board, "bKCastle") == True:
-                    validMoves.append(6)
-            if board[4] == Piece.Black| Piece.King and boardObj.bQCastle == True and self.validCastle(board, "bQCastle") == True:
-                if board[3] == 0 and board[2] == 0 and board[1] == 0 and board[0] == Piece.Black| Piece.Rook:
-                    validMoves.append(2)
+        if boardObj != None:
+            if color == Piece.White:
+                if board[60] == Piece.White| Piece.King:
+                    if board[61] == 0 and board[62] == 0 and board[63] == Piece.White| Piece.Rook and boardObj.wKCastle == True and self.validCastle(board, "wKCastle") == True:
+                        validMoves.append(62)
+                    if board[59] == 0 and board[58] == 0 and board[57] == 0 and board[56] == Piece.White| Piece.Rook  and boardObj.wQCastle == True and self.validCastle(board, "wQCastle") == True:
+                        validMoves.append(58)
+            if color == Piece.Black:
+                if board[4] == Piece.Black| Piece.King:
+                    if board[5] == 0 and board[6] == 0 and board[7] == Piece.Black| Piece.Rook and boardObj.bKCastle == True and self.validCastle(board, "bKCastle") == True:
+                        validMoves.append(6)
+                if board[4] == Piece.Black| Piece.King and boardObj.bQCastle == True and self.validCastle(board, "bQCastle") == True:
+                    if board[3] == 0 and board[2] == 0 and board[1] == 0 and board[0] == Piece.Black| Piece.Rook:
+                        validMoves.append(2)
         
         return validMoves
     
@@ -279,5 +280,13 @@ class Logic:
             if board[move] == Piece.Black| Piece.Rook and color == Piece.White or board[move] == Piece.Black| Piece.Queen and color == Piece.White:
                 return False
             if board[move] == Piece.White| Piece.Rook and color == Piece.Black or board[move] == Piece.White| Piece.Queen and color == Piece.Black:
+                return False
+        # King attack
+        validMoves = []
+        validMoves.extend(self.kingLogic(board, position, color, None))
+        for move in validMoves:
+            if board[move] == Piece.Black| Piece.King and color == Piece.White:
+                return False
+            if board[move] == Piece.White| Piece.King and color == Piece.Black:
                 return False
         return True
