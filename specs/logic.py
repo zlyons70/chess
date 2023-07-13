@@ -12,7 +12,7 @@ class Logic:
         if color != Piece.Black:
             color = Piece.White
         if piece == Piece.Pawn | Piece.White or piece == Piece.Pawn | Piece.Black:
-            validMoves = self.pawnLogic(board, position, color)
+            validMoves = self.pawnLogic(board, position, color, boardObject)
         if piece == Piece.Rook | Piece.White or piece == Piece.Rook | Piece.Black:
             validMoves = self.rookLogic(board, position, color)
         if piece == Piece.Knight | Piece.White or piece == Piece.Knight | Piece.Black:
@@ -40,7 +40,7 @@ class Logic:
     # then we can check to see if we have a pawn in position to take this pawn
     # if we don't have a pawn in that position or opt to not take the pawn then we set the variable to None
     #TODO En Passant and Promotion
-    def pawnLogic(self, board, position, color):
+    def pawnLogic(self, board, position, color, boardObject):
         validMoves = []
         direction = -1
         if color == Piece.Black:
@@ -71,7 +71,19 @@ class Logic:
                 validMoves.append(position + 7 * direction)
             if board[position + 9 * direction] & color != color and board[position + 9 * direction] != 0:
                 validMoves.append(position + 9 * direction)
-        
+        if boardObject.enPassant != -1:
+            if color == Piece.White:
+                if position - boardObject.enPassant == -1:
+                    validMoves.append(position - 7)
+                else:
+                    if position - boardObject.enPassant == 1:
+                        validMoves.append(position - 9)
+            else:
+                if position - boardObject.enPassant == 1:
+                    validMoves.append(position + 7)
+                else:
+                    if position - boardObject.enPassant == - 1:
+                        validMoves.append(position + 9)
         return validMoves
     # 17, 15, -17, -15, +10, -10, +6, -6
     def knightLogic(self, board, position, color):
@@ -88,6 +100,7 @@ class Logic:
     def bishopLogic(self, board, position, color):
         validMoves = []
         temp = position + 9
+        #print("In bishop logic color, ", color)
         while temp % 8 <= 7 and temp % 8 > position % 8 and temp <= 63:
             if board[temp] != 0:
                 if board[temp] & color == color:
@@ -191,7 +204,7 @@ class Logic:
         validMoves = []
         offset = [-1, 1, -8, 8, -7, 7, -9, 9]
         for move in offset:
-            if position + move >= 0 and position + move <= 63:
+            if position + move >= 0 and position + move <= 63 and abs(position % 8 - (position + move) % 8) <= 1:
                 if board[position + move] & color != color:
                     validMoves.append(position + move)
                 if board[position + move] == 0:
@@ -215,14 +228,15 @@ class Logic:
         return validMoves
     
     def validCastle(self, board, castleSide):
+        print("In valid castle")
         if castleSide == "wKCastle":
-            return self.checkLogic(board, 61, Piece.White) and self.checkLogic(board, 62, Piece.White)
+            return self.checkLogic(board, 61, Piece.White) and self.checkLogic(board, 62, Piece.White) and self.checkLogic(board, 60, Piece.White)
         if castleSide == "wQCastle":
-            return self.checkLogic(board, 59, Piece.White) and self.checkLogic(board, 58, Piece.White)
+            return self.checkLogic(board, 59, Piece.White) and self.checkLogic(board, 58, Piece.White) and self.checkLogic(board, 50, Piece.White)
         if castleSide == "bKCastle":
-            return self.checkLogic(board, 5, Piece.Black) and self.checkLogic(board, 6, Piece.Black)
+            return self.checkLogic(board, 5, Piece.Black) and self.checkLogic(board, 6, Piece.Black) and self.checkLogic(board, 4, Piece.Black)
         if castleSide == "bQCastle":
-            return self.checkLogic(board, 3, Piece.Black) and self.checkLogic(board, 2, Piece.Black)
+            return self.checkLogic(board, 3, Piece.Black) and self.checkLogic(board, 2, Piece.Black) and self.checkLogic(board, 4, Piece.Black)
         return
     # This function is going to take a square on the board and it will return whether or not that square is under attack        
     def checkLogic(self, board, position, color):
@@ -230,9 +244,11 @@ class Logic:
         if color == Piece.White:
             if position - 9 >= 0 and position - 9 <= 63 and position % 8 != 0:
                 if board[position - 9] == Piece.Black| Piece.Pawn:
+                    print("Pawn attack")
                     return False
             if position - 7 >= 0 and position - 7 <= 63 and position % 8 != 7:
                 if board[position - 7] == Piece.Black| Piece.Pawn:
+                    print("Pawn attack")
                     return False
         if color == Piece.Black:
             if position + 9 >= 0 and position + 9 <= 63 and position % 8 != 7:

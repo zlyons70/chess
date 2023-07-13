@@ -29,6 +29,7 @@ class Game:
     # TODO
     # Make helper functions for each of these
     # 50 move rule.
+    # cannot castle out of check
     def beginNewTurn(self):
         if self.turn == Piece.White:
             self.turn = Piece.Black
@@ -41,6 +42,7 @@ class Game:
             self.board.halfMoves = 0
         if self.board.whiteCheck == True or self.board.blackCheck == True:
             self.checkmate()
+            print("Checkmate")
         self.stalemate()
         if self.board.halfMoves == 50:
             print("Draw by 50 move rule")
@@ -66,10 +68,11 @@ class Game:
         if self.selectedPiece is None or self.board.board[self.selectedPiece] == 0:
             print("in Select first conditional")
             print(self.board.board[pos])
-            if self.board.board[pos] != 0:
+            if self.board.board[pos] != 0 and self.board.board[pos] & self.turn == self.turn:
                 self.selectedPiece = pos
                 piece = self.board.board[self.selectedPiece]
                 if self.validMoves.get(self.selectedPiece) == None:
+                    print("generating move on click")
                     self.validMoves[self.selectedPiece] = self.logic.pieceType(self.board.board, piece, self.selectedPiece, self.board, currentKingPos)
                 print(self.validMoves[self.selectedPiece])
                 if piece < 16 and self.turn == Piece.Black:
@@ -91,8 +94,16 @@ class Game:
     def _move(self, destination):
         pos = self.selectedPiece
         piece = self.board.board[pos]
-        # if castleing move rook
-        # if the piece we're moving is the king, we need to disable castling
+
+        if piece == Piece.Pawn | self.turn:
+            print("In pawn conditional")
+            print(pos)
+            print(destination)
+            if abs(pos - destination) == 16:
+                print("In en passant conditional")
+                print("Destination", destination)
+                self.board.enPassant = destination
+
         if piece == Piece.King | self.turn:
             if self.turn == Piece.White:
                 print("White king moved")
@@ -130,11 +141,6 @@ class Game:
         self.board.move(pos, destination)
         self.selectedPiece = None
         self.beginNewTurn()
-        # if self.turn == Piece.White:
-        #     self.board.whiteCheck = not self.logic.checkLogic(self.board.board, self.board.whiteKingPosition, self.turn)
-        # else:
-        #     self.board.blackCheck = not self.logic.checkLogic(self.board.board, self.board.blackKingPosition, self.turn)
-        #self.update()
     
     def moveValid(self, destination):
         piece = self.board.board[self.selectedPiece]
@@ -151,14 +157,19 @@ class Game:
         return False
     
     def generateAllValidMoves(self):
+        print("In generate all valid moves")
         if self.turn == Piece.White:
             currentKingPos = self.board.whiteKingPosition
         else:
             currentKingPos = self.board.blackKingPosition
-        for i in range(64):
+        for i in range(63):
             if self.board.board[i] != 0 and self.board.board[i] & self.turn == self.turn:
+                print("Board Position ", i)
                 piece = self.board.board[i]
-                self.validMoves[piece] = self.logic.pieceType(self.board.board, piece, i, self.board, currentKingPos)
+                self.validMoves[i] = self.logic.pieceType(self.board.board, piece, i, self.board, currentKingPos)
+                print(piece)
+                print(self.validMoves[i])
+                
         total = 0
         for moves in self.validMoves:
             if self.validMoves[moves] == []:

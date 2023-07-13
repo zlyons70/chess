@@ -195,3 +195,6 @@ class Board:
         for i in range(len(validMoves)):
             pygame.draw.circle(win, (15,10,75), (validMoves[i] % 8 * 100 + 50, int(validMoves[i] / 8) * 100 + 50), 20)
         return
+    
+    def drawPromotion(self, pos):
+        return
