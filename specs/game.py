@@ -3,8 +3,6 @@ from pygame.locals import *
 from .board import Board
 from .pieces import Piece
 from .logic import Logic
-# This file is responsible for the game logic
-# This is good because we don't clutter main
 # TODO
 # turn counter
 # 50 move rule
@@ -13,6 +11,14 @@ class Game:
         self._init()
         self.win = win
     
+    def _init(self):
+        self.selectedPiece = None
+        self.board = Board()
+        self.turn = Piece.White
+        self.validMoves = {}
+        self.logic = Logic()
+        self.highlightMoves = False
+        self.promotionScreen = False
     # This function updates our board
     def update(self):
         self.board.drawSquares(self.win)
@@ -36,23 +42,25 @@ class Game:
             self.board.whiteCheck = not self.logic.checkLogic(self.board.board, self.board.whiteKingPosition, Piece.White)
             self.board.fullMoves += 1
             self.board.halfMoves = 0
+        
+        if self.board.totalPieces <= 4:
+            if self.board.insufficientMaterial():
+                self.endGame()
+            
         if self.board.whiteCheck == True or self.board.blackCheck == True:
-            self.checkmate()
-        self.stalemate()
-        if self.board.halfMoves == 50:
+            if self.checkmate():
+                self.endGame()
+        elif self.stalemate():
+            self.endGame()
+        elif self.board.fiftyMoveRule == 50:
             print("Draw by 50 move rule")
-        if self.board.threeFold == True:
+        elif self.board.threeFold == True:
             print("Draw by 3 fold repetition")
         return
-            
-    def _init(self):
-        self.selectedPiece = None
-        self.board = Board()
-        self.turn = Piece.White
-        self.validMoves = {}
-        self.logic = Logic()
-        self.highlightMoves = False
-        self.promotionScreen = False
+    
+    def endGame(self):
+        print("Game Over")
+        return
     
     def reset(self):
         self._init()
@@ -170,13 +178,12 @@ class Game:
         if self.board.whiteCheck == True:
             total = self.generateAllValidMoves()
             if total == 0:
-                print("Checkmate")
+                return True
         if self.board.blackCheck == True:
-            print("Black is in check")
             total = self.generateAllValidMoves()
             if total == 0:
-                print("Checkmate")
-        return
+                return True
+        return False
     
     def stalemate(self):
         if self.board.whiteCheck == False and self.board.blackCheck == False:
@@ -193,11 +200,11 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_q:
-                        x =  Piece.Queen | self.turn
+                        x = Piece.Queen | self.turn
                         self.promotionScreen = False
 
                     if event.key == pygame.K_r:
-                        x =  Piece.Rook | self.turn
+                        x = Piece.Rook | self.turn
                         self.promotionScreen = False
 
                     if event.key == pygame.K_n:
@@ -205,8 +212,6 @@ class Game:
                         self.promotionScreen = False
 
                     if event.key == pygame.K_b:
-                        x =  Piece.Bishop | self.turn
+                        x = Piece.Bishop | self.turn
                         self.promotionScreen = False
-
-        print(x)
         return x

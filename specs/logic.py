@@ -48,8 +48,10 @@ class Logic:
         if position // 8 == 1 or position // 8 == 6:
             if board[position + 8 * direction] == 0:
                 validMoves.append(position + 8 * direction)
-                if board[position + 16 * direction] == 0:
-                    validMoves.append(position + 16 * direction)
+                temp = position + 16 * direction
+                if temp >= 0 and temp <= 63:
+                    if board[position + 16 * direction] == 0:
+                        validMoves.append(position + 16 * direction)
         if board[position + 8 * direction] == 0:
             validMoves.append(position + 8 * direction)
         if position % 8 == 0:

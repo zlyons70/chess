@@ -26,6 +26,8 @@ class Board:
         self.turn = 'w'
         self.threeFold = False
         self.fenApperances = {}
+        self.totalPieces = 32
+        self.fiftyMoveRule = 0
         #self.createBoard()
     
     def drawSquares(self, win):
@@ -49,6 +51,8 @@ class Board:
         self.whiteBishops = self.blackBishops = 0
         self.whiteRooks = self.blackRooks = 0
         self.whiteQueens = self.blackQueens = 0
+        self.totalPieces = 0
+        temp = 0
         x = 0
         y = 0
         spaceCounter = 0
@@ -131,7 +135,14 @@ class Board:
                     self.blackPawns += 1
                     self.board[boardPosition] = Piece.White | Piece.Pawn
                     win.blit(Piece.wPawn, (x,y))
+                temp += 1
                 x += 100
+            if temp != self.totalPieces:
+                self.fiftyMoveRule = 0
+            else:
+                self.fiftyMoveRule += 1
+            self.totalPieces = temp
+                
     
     def boardToFen(self, board):
         fen = ""
@@ -204,3 +215,17 @@ class Board:
         text_surface = font.render(text, True, (0, 0, 0))  # Render the text
         win.blit(text_surface, (x, y))  # Blit the text surface onto the screen
         return
+    
+    def insufficientMaterial(self):
+        whitePieces = self.whiteBishops + self.whiteKnights
+        blackPieces = self.blackBishops + self.blackKnights
+        if self.whitePawns == 0 and self.blackPawns == 0:
+            if self.whiteRooks == 0 and self.blackRooks == 0:
+                if self.whiteQueens == 0 and self.blackQueens == 0:
+                    if whitePieces == 0 and blackPieces == 0:
+                        return True
+                    elif (whitePieces == 1 and blackPieces == 0) or (whitePieces == 0 and blackPieces == 1):
+                        return True
+                    elif (whitePieces == 1 and blackPieces == 1):
+                        return True
+        return False
