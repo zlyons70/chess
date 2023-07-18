@@ -196,5 +196,11 @@ class Board:
             pygame.draw.circle(win, (15,10,75), (validMoves[i] % 8 * 100 + 50, int(validMoves[i] / 8) * 100 + 50), 20)
         return
     
-    def drawPromotion(self, pos):
+    def drawPromotion(self, win, text):
+        x = 200
+        y = 400
+        pygame.init()
+        font = pygame.font.Font(None, 50)
+        text_surface = font.render(text, True, (0, 0, 0))  # Render the text
+        win.blit(text_surface, (x, y))  # Blit the text surface onto the screen
         return

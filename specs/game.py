@@ -6,11 +6,8 @@ from .logic import Logic
 # This file is responsible for the game logic
 # This is good because we don't clutter main
 # TODO
-# en passant
-# pawn promotion
 # turn counter
 # 50 move rule
-# Fix white square bishop bug
 class Game:
     def __init__(self, win):
         self._init()
@@ -22,15 +19,13 @@ class Game:
         self.board.createBoard(self.win)
         if self.highlightMoves == True:
             self.board.drawValidMoves(self.win, self.validMoves[self.selectedPiece])
+        if self.promotionScreen == True:
+            self.board.drawPromotion(self.win, "Promote Piece: Q, R, B, N")
         pygame.display.update()
-            
-        #self.selectedPiece = None
-    # This function will be used to determine the state of the game after
-    # each move, we need to check for checkmate, stalemate, etc.
+
     # TODO
     # Make helper functions for each of these
     # 50 move rule.
-    # cannot castle out of check
     def beginNewTurn(self):
         if self.turn == Piece.White:
             self.turn = Piece.Black
@@ -57,6 +52,7 @@ class Game:
         self.validMoves = {}
         self.logic = Logic()
         self.highlightMoves = False
+        self.promotionScreen = False
     
     def reset(self):
         self._init()
@@ -66,13 +62,10 @@ class Game:
         self.highlightMoves = False
         currentKingPos = self.board.whiteKingPosition if self.turn == Piece.White else self.board.blackKingPosition
         if self.selectedPiece is None or self.board.board[self.selectedPiece] == 0:
-            print("in Select first conditional")
-            print(self.board.board[pos])
             if self.board.board[pos] != 0 and self.board.board[pos] & self.turn == self.turn:
                 self.selectedPiece = pos
                 piece = self.board.board[self.selectedPiece]
                 if self.validMoves.get(self.selectedPiece) == None:
-                    print("generating move on click")
                     self.validMoves[self.selectedPiece] = self.logic.pieceType(self.board.board, piece, self.selectedPiece, self.board, currentKingPos)
                 print(self.validMoves[self.selectedPiece])
                 if piece < 16 and self.turn == Piece.Black:
@@ -100,14 +93,10 @@ class Game:
         if piece == Piece.Pawn | self.turn:
             direction = -1 if self.turn == Piece.White else 1
             if abs(pos - destination) == 16:
-                print("In en passant conditional")
-                print("Destination", destination)
                 self.board.enPassant = destination
             if self.board.enPassant != -1:
                 if destination == self.board.enPassant + (8 * direction):
                     self.board.board[self.board.enPassant] = 0
-            if destination <= 7 or destination >= 56:
-                self.pawnPromotion()
         if piece == Piece.King | self.turn:
             if self.turn == Piece.White:
                 print("White king moved")
@@ -144,36 +133,31 @@ class Game:
             self.board.turn = 'w'
         self.board.move(pos, destination)
         self.selectedPiece = None
+        if (destination <= 7 or destination >= 56) and piece == Piece.Pawn | self.turn:
+            self.board.board[destination] = self.pawnPromotionPlayer()
+            self.board.boardToFen(self.board.board)
         self.beginNewTurn()
     
     def moveValid(self, destination):
         piece = self.board.board[self.selectedPiece]
-        print("In Move Valid pre if", self.turn, "piece", piece)
         if piece < 16 and self.turn == Piece.Black:
             return False
         if piece > 16 and self.turn == Piece.White:
             return False
-        print("Selected piece ", self.selectedPiece)
         if destination in self.validMoves[self.selectedPiece]:
             self.validMoves = {}
             return True
-        print("Invalid Move")
         return False
     
     def generateAllValidMoves(self):
-        print("In generate all valid moves")
         if self.turn == Piece.White:
             currentKingPos = self.board.whiteKingPosition
         else:
             currentKingPos = self.board.blackKingPosition
         for i in range(63):
             if self.board.board[i] != 0 and self.board.board[i] & self.turn == self.turn:
-                print("Board Position ", i)
                 piece = self.board.board[i]
                 self.validMoves[i] = self.logic.pieceType(self.board.board, piece, i, self.board, currentKingPos)
-                print(piece)
-                print(self.validMoves[i])
-                
         total = 0
         for moves in self.validMoves:
             if self.validMoves[moves] == []:
@@ -201,5 +185,28 @@ class Game:
                 print("Stalemate")
         return
     
-    def pawnPromotion(self):
-        return
+    def pawnPromotionPlayer(self):
+        self.promotionScreen = True
+        self.update()
+        x = 0
+        while self.promotionScreen:
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q:
+                        x =  Piece.Queen | self.turn
+                        self.promotionScreen = False
+
+                    if event.key == pygame.K_r:
+                        x =  Piece.Rook | self.turn
+                        self.promotionScreen = False
+
+                    if event.key == pygame.K_n:
+                        x = Piece.Knight | self.turn
+                        self.promotionScreen = False
+
+                    if event.key == pygame.K_b:
+                        x =  Piece.Bishop | self.turn
+                        self.promotionScreen = False
+
+        print(x)
+        return x
