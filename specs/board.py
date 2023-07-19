@@ -15,7 +15,7 @@ class Board:
         self.whiteRooks = self.blackRooks = 2
         self.whiteQueens = self.blackQueens = 1
         self.whiteKing = self.blackKing = 1
-        self.currentFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+        self.currentFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1'
         self.bKCastle = self.bQCastle = self.wKCastle = self.wQCastle = True
         self.halfMoves = 0
         self.fullMoves = 1
@@ -37,13 +37,8 @@ class Board:
                 pygame.draw.rect(win, LIGHT, (row * SQUARE_SIZE, col * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
     
     def createBoard(self, win):
-        #print(self.board)
         self.fenConvert(self.currentFen, win)
-        #print(self.board)
-        # TODO
-        # We'll need a function that converts from board to fen
-        # we can then set currentFen to the output of this function
-    
+
     # This function is used to convert from fen connotation to the board the players see
     def fenConvert(self, fen, win):
         self.whitePawns = self.blackPawns = 0
@@ -60,23 +55,17 @@ class Board:
         for i in range(len(fen)):
             if spaceCounter > 0:
                 if fen[i] == 'w':
-                    continue
-                    # TODO set turn to white
+                    self.turn = 'w'
                 elif fen[i] == 'b':
-                    continue
-                    # TODO set turn to black
+                    self.turn = 'b'
                 elif fen[i] == 'K':
-                    continue
-                    # TODO whiteKing castle kingside
+                    self.wKCastle = True
                 elif fen[i] == 'Q':
-                    continue
-                    # TODO whiteKing castle queenside
+                    self.wQCastle = True
                 elif fen[i] == 'k':
-                    continue
-                    # TODO blackKing castle kingside
+                    self.bKCastle = True
                 elif fen[i] == 'q':
-                    continue
-                    # TODO blackKing castle queenside
+                    self.bQCastle = True
             elif fen[i] == '/':
                 y += 100
                 x = 0

@@ -10,11 +10,16 @@ class Game:
     def __init__(self, win):
         self._init()
         self.win = win
-    
+
     def _init(self):
         self.selectedPiece = None
         self.board = Board()
-        self.turn = Piece.White
+        if self.board.turn == 'w':
+            self.turn = Piece.White
+            print("it's white turn")
+        else:
+            self.turn = Piece.Black
+            print("it's black turn")
         self.validMoves = {}
         self.logic = Logic()
         self.highlightMoves = False
