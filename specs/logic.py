@@ -35,11 +35,7 @@ class Logic:
         for moves in invalidMoves:
             validMoves.remove(moves)
         return validMoves
-    
-    # current enpeasant idea, we can keep a variable when a pawn moves 2 spaces, that grabs the position of the pawn that moved two spaces
-    # then we can check to see if we have a pawn in position to take this pawn
-    # if we don't have a pawn in that position or opt to not take the pawn then we set the variable to None
-    #TODO En Passant and Promotion
+
     def pawnLogic(self, board, position, color, boardObject):
         validMoves = []
         direction = -1
@@ -75,7 +71,6 @@ class Logic:
                 validMoves.append(position + 9 * direction)
         if boardObject.enPassant != -1:
             if color == Piece.White:
-                # TODO FIX ENPASSNAT BUG
                 temp = position - 9
                 if position - boardObject.enPassant == -1:
                     validMoves.append(position - 7)

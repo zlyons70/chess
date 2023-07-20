@@ -39,6 +39,8 @@ class Game:
             print("Turn is black")
             self.board.blackCheck = not self.logic.checkLogic(self.board.board, self.board.blackKingPosition, Piece.Black)
             self.board.halfMoves = 1
+            print("We are florring en passant black")
+            print(self.board.enPassant // 8)
             if self.board.enPassant // 8 == 3:
                 print("En passant is set to -1")
                 self.board.enPassant = -1
@@ -47,7 +49,11 @@ class Game:
             self.board.whiteCheck = not self.logic.checkLogic(self.board.board, self.board.whiteKingPosition, Piece.White)
             self.board.fullMoves += 1
             self.board.halfMoves = 0
+            print("Turn is white")
+            print("We are florring en passant white")
+            print(self.board.enPassant // 8)
             if self.board.enPassant // 8 == 4:
+                print("En passant is set to -1, in white")
                 self.board.enPassant = -1
         if self.board.totalPieces <= 4:
             if self.board.insufficientMaterial():
@@ -98,19 +104,22 @@ class Game:
     def _move(self, destination):
         pos = self.selectedPiece
         piece = self.board.board[pos]
-        if self.board.enPassant != -1:
-            if self.board.board[self.board.enPassant] == Piece.Pawn | self.turn:
-                self.board.enPassant = -1
+        # if self.board.enPassant != -1:
+        #     if self.board.board[self.board.enPassant] == Piece.Pawn | self.turn:
+        #         self.board.enPassant = -1
+        print("En passant is " + str(self.board.enPassant))
         if piece == Piece.Pawn | self.turn:
             direction = -1 if self.turn == Piece.White else 1
             if abs(pos - destination) == 16:
                 self.board.enPassant = destination
             if self.board.enPassant != -1:
+                print("En passant is not -1")
                 if destination == self.board.enPassant + (8 * direction):
                     self.board.board[self.board.enPassant] = 0
+                    print(self.board.board[self.board.enPassant])
+                    print("En passant")
         if piece == Piece.King | self.turn:
             if self.turn == Piece.White:
-                print("White king moved")
                 self.board.wKCastle = False
                 self.board.wQCastle = False
                 if pos == 60:
