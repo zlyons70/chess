@@ -67,7 +67,7 @@ class Board:
                     self.bKCastle = True
                 elif fen[i] == 'q':
                     self.bQCastle = True
-                elif fen[i] in Piece.enPassantDict:
+                elif fen[i] == '-':
                     self.enPassant = Piece.enPassantDict[fen[i]]
             elif fen[i] == '/':
                 y += 100
@@ -206,10 +206,17 @@ class Board:
         y = 400
         pygame.init()
         font = pygame.font.Font(None, 50)
-        text_surface = font.render(text, True, (0, 0, 0))  # Render the text
-        win.blit(text_surface, (x, y))  # Blit the text surface onto the screen
+        textSurface = font.render(text, True, (0, 0, 0))  # Render the text
+        win.blit(textSurface, (x, y))  # Blit the text surface onto the screen
         return
-    
+    def drawEndScreen(self, win, text):
+        x = 0
+        y = 400
+        pygame.init()
+        font = pygame.font.Font(None, 40)
+        textSurface = font.render(text, True, (0, 0, 0))  # Render the text
+        win.blit(textSurface, (x, y))  # Blit the text surface onto the screen
+        
     def insufficientMaterial(self):
         whitePieces = self.whiteBishops + self.whiteKnights
         blackPieces = self.blackBishops + self.blackKnights

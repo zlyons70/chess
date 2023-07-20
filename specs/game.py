@@ -15,6 +15,11 @@ class Game:
         self.logic = Logic()
         self.highlightMoves = False
         self.promotionScreen = False
+        self.drawEnd = False
+        self.draw = False
+        self.winner = None
+        self.end = False
+        self.draw
         print(self.board.turn)
         if self.board.turn == 'w':
             self.turn = Piece.White
@@ -28,6 +33,8 @@ class Game:
             self.board.drawValidMoves(self.win, self.validMoves[self.selectedPiece])
         if self.promotionScreen == True:
             self.board.drawPromotion(self.win, "Promote Piece: Q, R, B, N")
+        if self.drawEnd == True:
+            self.printEndScreen()
         pygame.display.update()
         return
 
@@ -36,24 +43,16 @@ class Game:
         print(self.board.enPassant)
         if self.turn == Piece.White:
             self.turn = Piece.Black
-            print("Turn is black")
             self.board.blackCheck = not self.logic.checkLogic(self.board.board, self.board.blackKingPosition, Piece.Black)
             self.board.halfMoves = 1
-            print("We are florring en passant black")
-            print(self.board.enPassant // 8)
             if self.board.enPassant // 8 == 3:
-                print("En passant is set to -1")
                 self.board.enPassant = -1
         else:
             self.turn = Piece.White
             self.board.whiteCheck = not self.logic.checkLogic(self.board.board, self.board.whiteKingPosition, Piece.White)
             self.board.fullMoves += 1
             self.board.halfMoves = 0
-            print("Turn is white")
-            print("We are florring en passant white")
-            print(self.board.enPassant // 8)
             if self.board.enPassant // 8 == 4:
-                print("En passant is set to -1, in white")
                 self.board.enPassant = -1
         if self.board.totalPieces <= 4:
             if self.board.insufficientMaterial():
@@ -63,15 +62,31 @@ class Game:
             if self.checkmate():
                 self.endGame()
         elif self.stalemate():
+            self.draw = True
             self.endGame()
         elif self.board.fiftyMoveRule == 50:
             print("Draw by 50 move rule")
+            self.draw = True
+            self.endGame()
         elif self.board.threeFold == True:
+            self.draw = True
+            self.endGame()
             print("Draw by 3 fold repetition")
         return
     
     def endGame(self):
-        print("Game Over")
+        if self.draw == True:
+            self.winner = "Draw"
+        elif self.turn == Piece.White:
+            self.winner = "Black"
+        else:
+            self.winner = "White"
+        self.end = True
+        self.drawEnd = True
+        return
+    
+    def printEndScreen(self):
+        self.board.drawEndScreen(self.win, "Game Over Winner is " + self.winner + " Press Q to quit or R to restart")
         return
     
     def reset(self):
@@ -104,20 +119,13 @@ class Game:
     def _move(self, destination):
         pos = self.selectedPiece
         piece = self.board.board[pos]
-        # if self.board.enPassant != -1:
-        #     if self.board.board[self.board.enPassant] == Piece.Pawn | self.turn:
-        #         self.board.enPassant = -1
-        print("En passant is " + str(self.board.enPassant))
         if piece == Piece.Pawn | self.turn:
             direction = -1 if self.turn == Piece.White else 1
             if abs(pos - destination) == 16:
                 self.board.enPassant = destination
             if self.board.enPassant != -1:
-                print("En passant is not -1")
                 if destination == self.board.enPassant + (8 * direction):
                     self.board.board[self.board.enPassant] = 0
-                    print(self.board.board[self.board.enPassant])
-                    print("En passant")
         if piece == Piece.King | self.turn:
             if self.turn == Piece.White:
                 self.board.wKCastle = False
@@ -201,8 +209,8 @@ class Game:
         if self.board.whiteCheck == False and self.board.blackCheck == False:
             total = self.generateAllValidMoves()
             if total == 0:
-                print("Stalemate")
-        return
+                return True
+        return False
     
     def pawnPromotionPlayer(self):
         self.promotionScreen = True

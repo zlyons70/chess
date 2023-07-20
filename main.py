@@ -22,6 +22,16 @@ def main():
     game = Game(WIN)
     while run:
         clock.tick(FPS)
+        if game.end != False:
+            game.update()
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q:
+                        run = False
+                    if event.key == pygame.K_r:
+                        game.reset()
+                if event.type == pygame.QUIT:
+                    run = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
