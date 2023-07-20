@@ -6,6 +6,7 @@ from .pieces import Piece
 # Create the board object
 class Board:
     # here we are def a few attributes of the board class
+    
     def __init__(self):
         self.board = [0] * 64
         self.selectedPositon = 0
@@ -15,8 +16,8 @@ class Board:
         self.whiteRooks = self.blackRooks = 2
         self.whiteQueens = self.blackQueens = 1
         self.whiteKing = self.blackKing = 1
-        self.currentFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1'
-        self.bKCastle = self.bQCastle = self.wKCastle = self.wQCastle = True
+        self.currentFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+        self.bKCastle = self.bQCastle = self.wKCastle = self.wQCastle = False
         self.halfMoves = 0
         self.fullMoves = 1
         self.blackKingPosition = 4
@@ -66,6 +67,8 @@ class Board:
                     self.bKCastle = True
                 elif fen[i] == 'q':
                     self.bQCastle = True
+                elif fen[i] in Piece.enPassantDict:
+                    self.enPassant = Piece.enPassantDict[fen[i]]
             elif fen[i] == '/':
                 y += 100
                 x = 0
@@ -95,6 +98,7 @@ class Board:
                 elif fen[i] == 'k':
                     self.blackKing += 1
                     self.board[boardPosition] = Piece.Black | Piece.King
+                    self.blackKingPosition = boardPosition
                     win.blit(Piece.bKing, (x,y))
                 elif fen[i] == 'p':
                     self.blackPawns += 1
@@ -119,6 +123,7 @@ class Board:
                 elif fen[i] == 'K':
                     self.whiteKing += 1
                     self.board[boardPosition]= Piece.White | Piece.King
+                    self.whiteKingPosition = boardPosition
                     win.blit(Piece.wKing, (x,y))
                 elif fen[i] == 'P':
                     self.blackPawns += 1
@@ -169,7 +174,7 @@ class Board:
         if self.enPassant == -1:
             fen += '-'
         else:
-            fen += str(self.enPassant)
+            fen += Piece.enPassantDict[self.enPassant]
         self.fenApperances[fen] = self.fenApperances.get(fen, 0) + 1
         if self.fenApperances[fen] >= 3:
             self.threeFold = True

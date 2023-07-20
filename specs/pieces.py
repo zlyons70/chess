@@ -28,7 +28,44 @@ class Piece:
         Queen | Black : 'q'
     }
 
-
+    enPassantDict = {
+        '-' : -1,
+        'a4' : 32,
+        'a5' : 24,
+        'b4' : 33,
+        'b5' : 25,
+        'c4' : 34,
+        'c5' : 26,
+        'd4' : 35,
+        'd5' : 27,
+        'e4' : 36,
+        'e5' : 28,
+        'f4' : 37,
+        'f5' : 29,
+        'g4' : 38,
+        'g5' : 30,
+        'h4' : 39,
+        'h5' : 31,
+        
+        -1 : '-',
+        32 : 'a4',
+        24 : 'a5',
+        33 : 'b4',
+        25 : 'b5',
+        34 : 'c4',
+        26 : 'c5',
+        35 : 'd4',
+        27 : 'd5',
+        36 : 'e4',
+        28 : 'e5',
+        37 : 'f4',
+        29 : 'f5',
+        38 : 'g4',
+        30 : 'g5',
+        39 : 'h4',
+        31 : 'h5'
+        
+    }
     bQueen = pygame.image.load('specs/images/bQueen.png')
     wQueen = pygame.image.load('specs/images/wQueen.png')
     bKing = pygame.image.load('specs/images/bKing.png')

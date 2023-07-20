@@ -75,16 +75,19 @@ class Logic:
                 validMoves.append(position + 9 * direction)
         if boardObject.enPassant != -1:
             if color == Piece.White:
+                # TODO FIX ENPASSNAT BUG
+                temp = position - 9
                 if position - boardObject.enPassant == -1:
                     validMoves.append(position - 7)
                 else:
-                    if position - boardObject.enPassant == 1:
+                    if position - boardObject.enPassant == 1 and temp % 8 != 7:
                         validMoves.append(position - 9)
             else:
                 if position - boardObject.enPassant == 1:
                     validMoves.append(position + 7)
                 else:
-                    if position - boardObject.enPassant == - 1:
+                    temp = position + 9
+                    if position - boardObject.enPassant == - 1 and temp % 8 != 0:
                         validMoves.append(position + 9)
         return validMoves
     # 17, 15, -17, -15, +10, -10, +6, -6

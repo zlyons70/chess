@@ -3,9 +3,6 @@ from pygame.locals import *
 from .board import Board
 from .pieces import Piece
 from .logic import Logic
-# TODO
-# turn counter
-# 50 move rule
 class Game:
     def __init__(self, win):
         self._init()
@@ -14,17 +11,16 @@ class Game:
     def _init(self):
         self.selectedPiece = None
         self.board = Board()
-        if self.board.turn == 'w':
-            self.turn = Piece.White
-            print("it's white turn")
-        else:
-            self.turn = Piece.Black
-            print("it's black turn")
         self.validMoves = {}
         self.logic = Logic()
         self.highlightMoves = False
         self.promotionScreen = False
-    # This function updates our board
+        print(self.board.turn)
+        if self.board.turn == 'w':
+            self.turn = Piece.White
+        else:
+            self.turn = Piece.Black
+    # This function updates our board and gets the fen value for the turn
     def update(self):
         self.board.drawSquares(self.win)
         self.board.createBoard(self.win)
@@ -33,21 +29,26 @@ class Game:
         if self.promotionScreen == True:
             self.board.drawPromotion(self.win, "Promote Piece: Q, R, B, N")
         pygame.display.update()
+        return
 
-    # TODO
-    # Make helper functions for each of these
-    # 50 move rule.
     def beginNewTurn(self):
+        print("Begin new turn")
+        print(self.board.enPassant)
         if self.turn == Piece.White:
             self.turn = Piece.Black
+            print("Turn is black")
             self.board.blackCheck = not self.logic.checkLogic(self.board.board, self.board.blackKingPosition, Piece.Black)
             self.board.halfMoves = 1
+            if self.board.enPassant // 8 == 3:
+                print("En passant is set to -1")
+                self.board.enPassant = -1
         else:
             self.turn = Piece.White
             self.board.whiteCheck = not self.logic.checkLogic(self.board.board, self.board.whiteKingPosition, Piece.White)
             self.board.fullMoves += 1
             self.board.halfMoves = 0
-        
+            if self.board.enPassant // 8 == 4:
+                self.board.enPassant = -1
         if self.board.totalPieces <= 4:
             if self.board.insufficientMaterial():
                 self.endGame()
@@ -74,20 +75,17 @@ class Game:
         destination = None
         self.highlightMoves = False
         currentKingPos = self.board.whiteKingPosition if self.turn == Piece.White else self.board.blackKingPosition
+        print(self.board.turn)
         if self.selectedPiece is None or self.board.board[self.selectedPiece] == 0:
             if self.board.board[pos] != 0 and self.board.board[pos] & self.turn == self.turn:
                 self.selectedPiece = pos
                 piece = self.board.board[self.selectedPiece]
                 if self.validMoves.get(self.selectedPiece) == None:
                     self.validMoves[self.selectedPiece] = self.logic.pieceType(self.board.board, piece, self.selectedPiece, self.board, currentKingPos)
-                print(self.validMoves[self.selectedPiece])
-                if piece < 16 and self.turn == Piece.Black:
-                    self.highlightMoves = False
-                elif piece > 16 and self.turn == Piece.White:
+                if piece < 16 and self.turn == Piece.Black or piece > 16 and self.turn == Piece.White:
                     self.highlightMoves = False
                 else:
                     self.highlightMoves = True
-
         else:
             destination = pos
             if self.selectedPiece != None and destination != None and self.moveValid(destination): 
@@ -95,8 +93,8 @@ class Game:
             else:
                 self.selectedPiece = None
                 self.select(pos)
-        
-    
+
+
     def _move(self, destination):
         pos = self.selectedPiece
         piece = self.board.board[pos]
