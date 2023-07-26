@@ -1,7 +1,9 @@
 import pygame
 from specs.constants import WIDTH, HEIGHT, SQUARE_SIZE
-from specs.board import Board
+#from specs.board import Board
 from specs.game import Game
+from specs.algorithm import negaMax
+from specs.pieces import Piece
 
 FPS = 60
 
@@ -22,6 +24,9 @@ def main():
     game = Game(WIN)
     while run:
         clock.tick(FPS)
+        if game.turn == Piece.White:
+            print('White\'s turn')
+            game.aiEval()
         if game.end != False:
             game.update()
             for event in pygame.event.get():

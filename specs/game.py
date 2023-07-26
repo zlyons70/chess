@@ -3,6 +3,10 @@ from pygame.locals import *
 from .board import Board
 from .pieces import Piece
 from .logic import Logic
+from .algorithm import negaMax
+from copy import deepcopy
+# TODO Move everything that relates to the board to the board class in order to make a deep copy of the board
+# this will allow me to simulate moves without having to copy the game state
 class Game:
     def __init__(self, win):
         self._init()
@@ -20,6 +24,7 @@ class Game:
         self.winner = None
         self.end = False
         self.draw
+        self.totalMoves = 0
         print(self.board.turn)
         if self.board.turn == 'w':
             self.turn = Piece.White
@@ -37,6 +42,9 @@ class Game:
             self.printEndScreen()
         pygame.display.update()
         return
+  
+    def reset(self):
+        self._init()
 
     def beginNewTurn(self):
         print("Begin new turn")
@@ -88,9 +96,6 @@ class Game:
     def printEndScreen(self):
         self.board.drawEndScreen(self.win, "Game Over Winner is " + self.winner + " Press Q to quit or R to restart")
         return
-    
-    def reset(self):
-        self._init()
 
     def select(self, pos):
         destination = None
@@ -192,6 +197,7 @@ class Game:
                 continue
             else:
                 total += len(self.validMoves[moves])
+        self.totalMoves = total
         return total
     
     def checkmate(self):
@@ -235,3 +241,20 @@ class Game:
                         x = Piece.Bishop | self.turn
                         self.promotionScreen = False
         return x
+    
+    def aiEval(self):
+        tempBoard = deepcopy(self.board)
+        tempGame = deepcopy(self)
+        maxPlayer = 1 if self.turn == Piece.White else -1
+        negaMax(tempBoard, 3, maxPlayer, tempGame)
+     
+     #TODO look into better mobility scoring methods that take into account forward momentum, protecting pieces, attacking pieces, etc.
+    def evaluate(self):
+        materialScore = self.board.materialScore()
+        mobilityScore  = self.totalMoves
+        who2Move = 1 if self.turn == Piece.White else -1
+        return (materialScore + mobilityScore) * who2Move
+            
+    # def aiMove(self):
+    #     return
+    

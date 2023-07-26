@@ -29,6 +29,11 @@ class Board:
         self.fenApperances = {}
         self.totalPieces = 32
         self.fiftyMoveRule = 0
+        self.queenWt = 9
+        self.rookWt = 5
+        self.bishopWt = 3
+        self.knightWt = 3
+        self.pawnWt = 1
         #self.createBoard()
     
     def drawSquares(self, win):
@@ -209,6 +214,7 @@ class Board:
         textSurface = font.render(text, True, (0, 0, 0))  # Render the text
         win.blit(textSurface, (x, y))  # Blit the text surface onto the screen
         return
+
     def drawEndScreen(self, win, text):
         x = 0
         y = 400
@@ -230,3 +236,7 @@ class Board:
                     elif (whitePieces == 1 and blackPieces == 1):
                         return True
         return False
+    
+    def materialScore(self):
+        return self.pawnWt * (self.whitePawns - self.blackPawns) + self.knightWt * (self.whiteKnights - self.blackKnights) + self.bishopWt * (self.whiteBishops - self.blackBishops) + self.rookWt * (self.whiteRooks - self.blackRooks) + self.queenWt * (self.whiteQueens - self.blackQueens)
+    
