@@ -2,7 +2,7 @@ from copy import deepcopy
 import pygame
 # validmoves key is the piece, value is a list of valid moves
 def negaMax (position, depth, maxPlayer, game):
-    if depth == 0: #or game.checkmate() or game.stalemate():
+    if depth == 0 or game.checkmate() or game.stalemate():
         return game.evaluate(), position
     max = float('-inf')
     for move in getAllMoves(position, maxPlayer, game):
@@ -13,12 +13,12 @@ def negaMax (position, depth, maxPlayer, game):
 
 def getAllMoves(board, maxPlayer, game):
     moves = []
-    validMoves = game.generateValidMoves()
+    validMoves = game.validMoves
     for piece in validMoves.keys():
         for move in validMoves[piece]:
             tempBoard = deepcopy(board)
-            tempGame = deepcopy(game)
-            newstate = simulateMove(tempBoard, tempGame, piece, move)
+            #tempGame = deepcopy(game)
+            newstate = simulateMove(tempBoard, game, piece, move)
             moves.append([newstate, piece])
     return moves
 

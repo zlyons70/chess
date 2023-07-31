@@ -242,11 +242,10 @@ class Game:
                         self.promotionScreen = False
         return x
     
-    def aiEval(self):
-        tempBoard = deepcopy(self.board)
-        tempGame = deepcopy(self)
-        maxPlayer = 1 if self.turn == Piece.White else -1
-        negaMax(tempBoard, 3, maxPlayer, tempGame)
+    # def aiEval(self):
+    #     tempBoard = deepcopy(self.board)
+    #     maxPlayer = 1 if self.turn == Piece.White else -1
+    #     negaMax(tempBoard, 3, maxPlayer, game)
      
      #TODO look into better mobility scoring methods that take into account forward momentum, protecting pieces, attacking pieces, etc.
     def evaluate(self):
@@ -255,6 +254,6 @@ class Game:
         who2Move = 1 if self.turn == Piece.White else -1
         return (materialScore + mobilityScore) * who2Move
             
-    # def aiMove(self):
-    #     return
-    
+    def aiMove(self, board):
+        self.board.board = board
+        return
